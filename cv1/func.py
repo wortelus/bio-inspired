@@ -7,75 +7,79 @@ f_eval = Callable[[np.ndarray], float]
 
 f_names = ["sphere", "Schwefel", "Rosenbrock", "Rastrigin", "Griewank", "Levy", "Michalewicz", "Zakharov", "Ackley"]
 
+
 class Function:
     def __init__(self, name, func):
         self.name = name
         self.func = partial(func, self)
 
     def sphere(self, params):
-        suma = 0
-        for p in params:
-            suma += p ** 2
+        params = np.array(params)
+        suma = np.sum(params ** 2)
         return suma
 
     def Schwefel(self, params):
-        suma = 0
-        for p in params:
-            suma += -p * np.sin(np.sqrt(np.abs(p)))
+        params = np.array(params)
+        d = len(params)
+        suma = 418.9829 * d - np.sum(params * np.sin(np.sqrt(np.abs(params))))
         return suma
 
     def Rosenbrock(self, params):
-        suma = 0
-        for i in range(len(params) - 1):
-            suma += 100 * (params[i + 1] - params[i] ** 2) ** 2 + (params[i] - 1) ** 2
+        params = np.array(params)
+        suma = np.sum(100 * (params[1:] - params[:-1] ** 2) ** 2 + (params[:-1] - 1) ** 2)
         return suma
 
     def Rastrigin(self, params):
-        suma = 0
-        for p in params:
-            suma += p ** 2 - 10 * np.cos(2 * np.pi * p) + 10
+        params = np.array(params)
+        d = len(params)
+        suma = 10 * d * np.sum(params ** 2 - 10 * np.cos(2 * np.pi * params))
         return suma
 
     def Griewank(self, params):
-        suma1 = 0
-        suma2 = 1
-        for i in range(len(params)):
-            suma1 += params[i] ** 2
-            suma2 *= np.cos(params[i] / np.sqrt(i + 1))
+        params = np.array(params)
+        suma1 = np.sum(params ** 2)
+        suma2 = np.prod(np.cos(params / np.sqrt(np.arange(1, len(params) + 1))))
         return 1 + suma1 / 4000 - suma2
 
     def Levy(self, params):
-        if type(params) is not np.ndarray:
-            params = np.array(params)
-
-        suma = 0
+        params = np.array(params)
         w = 1 + (params - 1) / 4
-        for i in range(len(params) - 1):
-            suma += (w[i] - 1) ** 2 * (1 + 10 * np.sin(np.pi * w[i] + 1) ** 2) + (w[-1] - 1) ** 2 * (
-                        1 + np.sin(2 * np.pi * w[-1]) ** 2)
-        return suma
+
+        term1 = (w[:-1] - 1) ** 2 * (1 + 10 * np.sin(np.pi * w[:-1] + 1) ** 2)
+        term2 = (w[-1] - 1) ** 2 * (1 + np.sin(2 * np.pi * w[-1]) ** 2)
+
+        return np.sum(term1) + term2
 
     def Michalewicz(self, params):
-        suma = 0
-        for i in range(len(params)):
-            suma += -np.sin(params[i]) * np.sin((i + 1) * params[i] ** 2 / np.pi) ** 20
+        params = np.array(params)
+        m = 10
+        suma = -np.sum(
+            np.sin(params) * np.pow(np.sin(np.divide([np.arange(1, len(params) + 1)] * params ** 2, np.pi)), 2 * m))
         return suma
 
     def Zakharov(self, params):
-        suma1 = 0
-        suma2 = 0
-        for i in range(len(params)):
-            suma1 += params[i] ** 2
-            suma2 += 0.5 * (i + 1) * params[i]
-        return suma1 + suma2 ** 2 + suma2 ** 4
+        params = np.array(params)
+        d = len(params)
+        suma = (
+                np.sum(params ** 2) +
+                np.sum(0.5 * np.arange(1, d + 1) * params) ** 2 +
+                np.sum(0.5 * np.arange(1, d + 1) * params) ** 4
+        )
+        return suma
 
     def Ackley(self, params):
-        suma1 = 0
-        suma2 = 0
-        for i in range(len(params)):
-            suma1 += params[i] ** 2
-            suma2 += np.cos(2 * np.pi * params[i])
-        return -20 * np.exp(-0.2 * np.sqrt(suma1 / len(params))) - np.exp(suma2 / len(params)) + 20 + np.e
+        params = np.array(params)
+        a = 20
+        b = 0.2
+        c = 2 * np.pi
+        d = len(params)
+        suma = (
+                -a *
+                np.exp(-b * np.sqrt(np.sum(params ** 2) / d)) -
+                np.exp(np.sum(np.cos(c * params)) / d) +
+                a + np.exp(1)
+        )
+        return suma
 
     def get_func(name: str):
         if name == "sphere":

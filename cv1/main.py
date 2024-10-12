@@ -88,18 +88,28 @@ class Solution:
 
         # Save or show the animation
         # plt.show()
+        
+        
+    def animate_best(self):
+        def rotate(i):
+            self.ax.view_init(elev=30., azim=i)
+            return self.plot(len(self.best_fit) - 1)  # Plot the last frame (best solution)
+
+        anim = FuncAnimation(self.fig, rotate, frames=np.arange(0, 360, 2), repeat=False)
+        anim.save(f'plots/{self.func.name}_rotate.gif', writer='imagemagick', fps=30)
 
 
 def main():
-    # func = Solution(2, -100, 100, Function.get_func("Levy"))
+    # func = Solution(2, -4, 4, Function.get_func("Michalewicz"))
     # func.search(1000, 10)
     # func.animate()
 
     # return
     for name in f_names:
-        func = Solution(2, -100, 100, Function.get_func(name))
+        func = Solution(2, -4, 4, Function.get_func(name))
         func.search(1000, 10)
-        func.animate()
+        # func.animate()
+        func.animate_best()
 
 if __name__ == '__main__':
     main()
