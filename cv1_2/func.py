@@ -26,6 +26,7 @@ class Function:
 
     def Rosenbrock(self, params):
         params = np.array(params)
+        # interesting way to index [x+1] by using [1:] together with [:-1]
         suma = np.sum(100 * (params[1:] - params[:-1] ** 2) ** 2 + (params[:-1] - 1) ** 2)
         return suma
 
