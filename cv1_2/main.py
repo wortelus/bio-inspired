@@ -190,7 +190,7 @@ class Solution:
     def animate(self):
         # Creating the animation
         anim = FuncAnimation(self.fig, self.plot, frames=self.best_cost.shape[0], repeat=False)
-        anim.save(f'plots/{self.func.name}.gif', writer='imagemagick', fps=3)
+        anim.save(f'plots/{self.func.name}.gif', writer='imagemagick', fps=10)
 
         # Save or show the animation
         # plt.show()
