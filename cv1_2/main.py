@@ -61,8 +61,9 @@ class Solution:
     def hill_climb(self, step_size: float, neighbour_count: int, max_iterations=1000):
         previous_params = np.random.uniform(self.lB, self.uB, self.dimension)
         for i in range(1, max_iterations):
-            neighbour_params = previous_params[:, np.newaxis] + np.random.uniform(-step_size, step_size,(self.dimension, neighbour_count))
-            # flip the axis
+            neighbour_params = previous_params[:, np.newaxis] + np.random.uniform(-step_size, step_size,
+                                                                                  (self.dimension, neighbour_count))
+            # flip the axis, TODO: this is not invariant to more axis selection
             neighbour_params = np.array(list(zip(neighbour_params[0], neighbour_params[1])))
             cost_values = np.array(list(map(self.func.func, neighbour_params)))
 
@@ -86,6 +87,70 @@ class Solution:
                 break
 
             print(f"{i}/{max_iterations} iteration of population {neighbour_count}")
+
+    def simulated_annealing(self, step_size: float, neighbour_count: int,
+                            initial_temp: float, cooling_rate: float, stop_temp: float,
+                            max_iterations=1000):
+        # Initialize parameters randomly
+        current_params = np.random.uniform(self.lB, self.uB, self.dimension)
+        current_cost = self.func.func(current_params)
+
+        # Initial temperature
+        temperature = initial_temp
+
+        # Best solutions so far
+        self.best_cost = np.append(self.best_cost, current_cost)
+        self.best_params = np.vstack([self.best_params, current_params])
+
+        for i in range(1, max_iterations):
+            # Generate neighbours around current parameters
+            neighbour_params = (current_params[:, np.newaxis] +
+                                np.random.uniform(-step_size, step_size,
+                                                  (self.dimension, neighbour_count)))
+            # TODO: only works for 2D, should be generalized
+            neighbour_params = np.array(list(zip(neighbour_params[0], neighbour_params[1])))
+
+            # Compute the cost of all generated neighbours in current iteration
+            cost_values = np.array(list(map(self.func.func, neighbour_params)))
+
+            # Find the index of the minimum cost value (best neighbour)
+            best_index = np.argmin(cost_values)
+            best_neighbour_cost = cost_values[best_index]
+            best_neighbour_params = neighbour_params[best_index]
+
+            # If the new solution is better, accept it
+            if best_neighbour_cost < self.best_cost[-1]:
+                current_params = best_neighbour_params
+                current_cost = best_neighbour_cost
+                print(f'Better:\t{i}, Z={current_cost}')
+            else:
+                # If the new solution is worse, accept it based on following probability
+                delta_cost = best_neighbour_cost - current_cost
+                acceptance_probability = np.exp(-delta_cost / temperature)
+
+                if np.random.rand() < acceptance_probability:
+                    current_params = best_neighbour_params
+                    current_cost = best_neighbour_cost
+                    print(f'Accepted worse solution at iteration {i} with cost {current_cost}')
+                else:
+                    print(f"Rejected worse solution at iteration {i} with cost {current_cost}")
+
+            # Update the best solution
+            # if current_cost < self.best_cost[-1]:
+            self.best_cost = np.append(self.best_cost, current_cost)
+            self.best_params = np.vstack([self.best_params, current_params])
+
+            print(f"Iteration {i}/{max_iterations} | Current cost: {current_cost} | Temperature: {temperature}")
+
+            # Cooldown
+            temperature = temperature * cooling_rate
+            
+            # Stop if the temperature is low enough
+            if temperature < stop_temp:
+                print("Temperature has cooled down, stopping.")
+                break
+
+        return self.best_params, self.best_cost
 
     def plot(self, i: int):
         self.ax.clear()
@@ -146,7 +211,8 @@ def main():
 
     # return
     for name in f_names:
-        func = Solution(2, -4, 4, Function.get_func(name))
+        f, (lb, ub) = Function.get_func(name)
+        func = Solution(2, lb, ub, f)
         func.blind(1000, 10)
         func.animate()
         # func.animate_best()

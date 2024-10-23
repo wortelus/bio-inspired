@@ -82,22 +82,22 @@ class Function:
         )
         return suma
 
-    def get_func(name: str):
+    def get_func(name: str) -> (object, (int, int)):
         if name == "sphere":
-            return Function(name, Function.sphere)
+            return Function(name, Function.sphere), (-4, 4)
         elif name == "Schwefel":
-            return Function(name, Function.Schwefel)
+            return Function(name, Function.Schwefel), (-500, 500)
         elif name == "Rosenbrock":
-            return Function(name, Function.Rosenbrock)
+            return Function(name, Function.Rosenbrock), (-6, 6)
         elif name == "Rastrigin":
-            return Function(name, Function.Rastrigin)
+            return Function(name, Function.Rastrigin), (-5, 5)
         elif name == "Griewank":
-            return Function(name, Function.Griewank)
+            return Function(name, Function.Griewank), (-10, 10)
         elif name == "Levy":
-            return Function(name, Function.Levy)
+            return Function(name, Function.Levy), (-10, 10)
         elif name == "Michalewicz":
-            return Function(name, Function.Michalewicz)
+            return Function(name, Function.Michalewicz), (-4, 4)
         elif name == "Zakharov":
-            return Function(name, Function.Zakharov)
+            return Function(name, Function.Zakharov), (-10, 10)
         elif name == "Ackley":
-            return Function(name, Function.Ackley)
+            return Function(name, Function.Ackley), (-40, 40)
