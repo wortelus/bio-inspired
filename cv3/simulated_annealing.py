@@ -1,5 +1,5 @@
-from cv1_2.main import Solution
-from cv1_2.func import Function, f_names
+from core.solution import Solution
+from core.func import Function, f_names
 
 def main():
     for name in f_names:
