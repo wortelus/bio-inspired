@@ -86,22 +86,40 @@ class Function:
         # The lower the temperature, the lower the craziness
         # The higher the Y-axis values, the lower the craziness
         default_temp_multiplier = 1.
-        
+
         if name == "sphere":
-            return Function(name, Function.sphere), (-4, 4), 0.01
+            return (Function(name, Function.sphere),
+                    (-4, 4),
+                    0.01)
         elif name == "Schwefel":
-            return Function(name, Function.Schwefel), (-500, 500), default_temp_multiplier
+            return (Function(name, Function.Schwefel),
+                    (-500, 500),
+                    default_temp_multiplier)
         elif name == "Rosenbrock":
-            return Function(name, Function.Rosenbrock), (-6, 6), 100
+            return (Function(name, Function.Rosenbrock),
+                    (-6, 6),
+                    100)
         elif name == "Rastrigin":
-            return Function(name, Function.Rastrigin), (-5, 5), default_temp_multiplier
+            return (Function(name, Function.Rastrigin),
+                    (-5, 5),
+                    default_temp_multiplier)
         elif name == "Griewank":
-            return Function(name, Function.Griewank), (-10, 10), 0.01
+            return (Function(name, Function.Griewank),
+                    (-10, 10),
+                    0.01)
         elif name == "Levy":
-            return Function(name, Function.Levy), (-10, 10), 0.1
+            return (Function(name, Function.Levy), 
+                    (-10, 10), 
+                    0.1)
         elif name == "Michalewicz":
-            return Function(name, Function.Michalewicz), (-4, 4), 0.01
+            return (Function(name, Function.Michalewicz), 
+                    (-4, 4), 
+                    0.01)
         elif name == "Zakharov":
-            return Function(name, Function.Zakharov), (-10, 10), default_temp_multiplier
+            return (Function(name, Function.Zakharov), 
+                    (-10, 10), 
+                    default_temp_multiplier)
         elif name == "Ackley":
-            return Function(name, Function.Ackley), (-40, 40), 0.01
+            return (Function(name, Function.Ackley), 
+                    (-40, 40), 
+                    0.01)

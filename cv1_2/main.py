@@ -122,8 +122,6 @@ class Solution:
             if best_neighbour_cost < self.best_cost[-1]:
                 current_params = best_neighbour_params
                 current_cost = best_neighbour_cost
-                self.best_cost = np.append(self.best_cost, current_cost)
-                self.best_params = np.vstack([self.best_params, current_params])
                 print(f'Better:\t{i}, Z={current_cost}')
             else:
                 # If the new solution is worse, accept it based on following probability
@@ -133,14 +131,15 @@ class Solution:
                 if np.random.rand() < acceptance_probability:
                     current_params = best_neighbour_params
                     current_cost = best_neighbour_cost
-                    self.best_cost = np.append(self.best_cost, current_cost)
-                    self.best_params = np.vstack([self.best_params, current_params])
                     print(f'Accepted worse solution at iteration {i} with cost {current_cost}')
                 else:
                     print(f"Rejected worse solution at iteration {i} with cost {current_cost}")
-                    # TODO: clean up addition of best cost and params
-                    self.best_cost = np.append(self.best_cost, self.best_cost[-1])
-                    self.best_params = np.vstack([self.best_params, self.best_params[-1]])
+                    current_cost = self.best_cost[-1]
+                    current_params = self.best_params[-1]
+
+            # Update the Solution
+            self.best_cost = np.append(self.best_cost, current_cost)
+            self.best_params = np.vstack([self.best_params, current_params])
 
             print(f"Iteration {i}/{max_iterations} | Current cost: {current_cost} | Temperature: {temperature}")
 
