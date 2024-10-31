@@ -28,7 +28,15 @@ def tsp_eval_func(cities: TspDict, path: list[str]) -> float:
         cost += ((
                          (cities[city1][0] - cities[city2][0]) ** 2 +
                          (cities[city1][1] - cities[city2][1]) ** 2
-                 )** 0.5)
+                 ) ** 0.5)
+
+    # Hotfix: zjistil jsem že TSP počítá aj zpáteční cestu
+    first_city = path[0]
+    last_city = path[-1]
+    cost += ((
+                     (cities[last_city][0] - cities[first_city][0]) ** 2 +
+                     (cities[last_city][1] - cities[first_city][1]) ** 2
+             ) ** 0.5)
     return cost
 
 
@@ -68,6 +76,7 @@ class Tsp:
                  cities: list[(str, float, float)],
                  generations: int,
                  population_size: int = 100,
+                 mutation_rate: float = 0.5,
                  crossover: CrossoverFunc = tsp_crossover_func,
                  eval_func: EvalFunc = tsp_eval_func,
                  mutation_func: MutationFunc = tsp_mutation_func,
@@ -75,12 +84,12 @@ class Tsp:
         self.cities_all = cities
         self.cities_list = tsp_list_to_list_of_cities(cities)
         self.cities_dict = tsp_list_to_dict(cities)
-        
+
         self.crossover = crossover
         self.population_size = population_size
         self.generations = generations
 
-        self.mutation_rate = 0.5
+        self.mutation_rate = mutation_rate
 
         self.eval_func = eval_func
         self.mutation_func = mutation_func
@@ -92,7 +101,7 @@ class Tsp:
         population = self.populations[0]
         # Ohodnoťme je
         costs = [self.eval_func(self.cities_dict, path) for path in population]
-        
+
         # Listy pro nejlepší cesty a ceny z dané populace v dané generaci
         best_cost = [min(costs)]
         best_path = [population[costs.index(best_cost[0])]]
@@ -121,12 +130,12 @@ class Tsp:
             # 
             population = new_population
             costs = new_costs
-            
+
             best_cost.append(min(costs))
             best_path.append(population[costs.index(best_cost[-1])])
-            
+
             print(f"{gen + 1}/{self.generations}\tBest cost: {best_cost[-1]}")
-            
+
         return best_path, best_cost
 
     def plot_animation(self, path: list[TspList], costs: list[float]):
@@ -137,6 +146,13 @@ class Tsp:
         x = [city[0] for city in self.cities_dict.values()]
         y = [city[1] for city in self.cities_dict.values()]
         ax.scatter(x, y)
+
+        for city_name, (city_x, city_y) in self.cities_dict.items():
+            ax.annotate(city_name,
+                        (city_x, city_y),
+                        textcoords="offset points", xytext=(5, 5),
+                        ha='center', fontsize=8)
+
         line, = ax.plot([], [], lw=2)
 
         def init():
@@ -147,9 +163,13 @@ class Tsp:
             cur_path = path[i]
             cur_cost = costs[i]
             ax.set_title(f"Generation {i + 1}, Cost: {cur_cost}")
-            
+
             _x = [self.cities_dict[city][0] for city in cur_path]
             _y = [self.cities_dict[city][1] for city in cur_path]
+
+            # Hotfix: zjistil jsem že TSP počítá aj zpáteční cestu
+            _x.append(_x[0])
+            _y.append(_y[0])
             line.set_data(_x, _y)
             return line,
 

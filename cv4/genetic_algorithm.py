@@ -1,5 +1,16 @@
-from core.tsp import Tsp
+from random import random
+
+from core.tsp import Tsp, TspList
 from core.func import Function, f_names
+
+
+def get_random_positions(cities: TspList, min_x, max_x, min_y, max_y):
+    for i, city in enumerate(cities):
+        cities[i] = (city[0],
+                     min_x + random() * (max_x - min_x),
+                     min_y + random() * (max_y - min_y)
+                     )
+
 
 def main():
     cities = [
@@ -44,10 +55,12 @@ def main():
         ('Bohumín', 49.54, 18.21),
         ('Hodonín', 48.51, 17.08),
     ]
-    tsp = Tsp(cities, 1000)
+    get_random_positions(cities, 48, 51, 12, 19)
+    tsp = Tsp(cities, 1000, 20, 0.5)
     paths, costs = tsp.run()
     tsp.plot_animation(paths, costs)
     print("done")
+
 
 if __name__ == '__main__':
     main()
