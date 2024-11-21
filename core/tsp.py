@@ -113,7 +113,10 @@ class Tsp:
             new_costs = costs[:]
 
             for pop in range(self.population_size):
-                maminka, tatinek = sample(population, 2)
+                maminka = population[pop]
+                tatinek = sample(population, 1)[0]
+                while maminka == tatinek:
+                    tatinek = sample(population, 1)[0]
                 # Zkřížíme maminku a tatínka (pusinky)
                 babetko = self.crossover(maminka, tatinek)
                 # Zmutujme babetko
