@@ -57,8 +57,7 @@ def main():
     get_random_positions(cities, 48, 51, 12, 19)
     aco = ACO(cities, 100, len(cities), 0.5, 1.0, 1.0, 2.0)
     aco.run()
-    aco.animate()
-    aco.animate_pheromones()
+    aco.animate_all()
 
 if __name__ == '__main__':
     main()

@@ -2,7 +2,6 @@ from copy import deepcopy
 
 import numpy as np
 import matplotlib.animation as animation
-import seaborn as sns
 from datetime import datetime
 from matplotlib import pyplot as plt
 from matplotlib.cm import get_cmap
@@ -165,25 +164,14 @@ class ACO:
 
         anim = animation.FuncAnimation(fig, animate, init_func=init, frames=frames, interval=200, blit=True)
         anim.save(f'plots/{datetime.now().isoformat()}.mp4', writer='ffmpeg', fps=20, dpi=300)
-        # plt.show()
 
     def animate_pheromones(self):
         frames = len(self.pheromone_matrices)
         fig, ax = plt.subplots()
 
-        # Display the first frame using Matplotlib's imshow
         img = ax.imshow(self.pheromone_matrices[0], vmin=0.0, vmax=1.0, cmap="viridis", aspect="auto")
         cbar = fig.colorbar(img, ax=ax)
         ax.set_title("Generace 1")
-
-        # def init():
-        #     sns.heatmap(self.pheromone_matrices[0], vmin=0.0, vmax=1.0, square=True, cbar=True, ax=ax)
-        #     return [ax]
-
-        # def animate(i):
-        #     sns.heatmap(self.pheromone_matrices[i], vmin=0.0, vmax=1.0, square=True, cbar=False, ax=ax)
-        #     ax.set_title(f"Generace {i + 1}")
-        #     return [ax]
 
         def animate(i):
             img.set_data(self.pheromone_matrices[i])  # Update the image data
@@ -192,4 +180,74 @@ class ACO:
 
         anim = animation.FuncAnimation(fig, animate, frames=frames, repeat=False)
         anim.save(f'plots/{datetime.now().isoformat()}_pheromones.mp4', writer='ffmpeg', fps=20, dpi=300)
-        # plt.show()
+
+    def animate_all(self):
+        paths = self.best_paths
+        costs = self.best_costs
+        pheromone_matrices = self.pheromone_matrices
+
+        # Počet snímků
+        frames = len(paths)
+        assert len(paths) == len(costs) == len(pheromone_matrices)
+
+        # Dva subploty - 1. TSP Cesty, 2. Pheromone Matrix
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+        plt.tight_layout()
+
+        # Subplot 1: TSP Cesty
+        x = [city[1] for city in self.cities]
+        y = [city[2] for city in self.cities]
+        
+        ax1.scatter(x, y)
+        for city_name, city_x, city_y in self.cities:
+            ax1.annotate(city_name,
+                         (city_x, city_y),
+                         textcoords="offset points", xytext=(5, 5),
+                         ha='center', fontsize=8)
+
+        line, = ax1.plot([], [], lw=2)
+        ax1.set_aspect('equal', adjustable='box')
+
+        # Subplot 2: Pheromone Matrix
+        img = ax2.imshow(pheromone_matrices[0], vmin=0.0, vmax=1.0, cmap="viridis", aspect="equal")
+        cbar = fig.colorbar(img, ax=ax2)
+        ax2.set_title("Generace 1")        
+        ax2.set_aspect('equal', adjustable='box')
+
+        def init():
+            # Inicializace TSP Cest a Pheromone Matrix
+            line.set_data([], [])
+            img.set_data(np.zeros_like(pheromone_matrices[0]))
+            return line, img
+
+        def animate(i):
+            # Aktualizace TSP cest
+            cur_path = paths[i]
+            cur_cost = costs[i]
+            ax1.set_title(f"Generace {i + 1}, Nejlepší mravenec: {cur_cost}")
+
+            _x = [self.cities[j][1] for j in cur_path]
+            _y = [self.cities[j][2] for j in cur_path]
+
+            # Barvičky
+            val_min, val_max = 0.0, 1.0
+            normalized_value = (cur_cost - val_min) / (val_max - val_min)
+            normalized_value = np.clip(normalized_value, val_min, val_max)
+            cmap = get_cmap('viridis')
+            color = cmap(normalized_value)
+            line.set_color(color)
+
+            # TSP čára
+            line.set_data(_x, _y)
+
+            # Aktualizace Pheromone Matrix
+            img.set_data(pheromone_matrices[i])
+            ax2.set_title(f"Generace {i + 1}")
+
+            return line, img
+
+        # Animace
+        anim = animation.FuncAnimation(fig, animate, init_func=init, frames=frames, interval=200, blit=True)
+
+        # Uložit animaci
+        anim.save(f'plots/{datetime.now().isoformat()}_combined.mp4', writer='ffmpeg', fps=10, dpi=300)
