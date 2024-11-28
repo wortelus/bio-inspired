@@ -1,9 +1,10 @@
-from random import random
+from random import random, seed
 
 from core.tsp import TspList
 from cv8.aco import ACO
 
 def get_random_positions(cities: TspList, min_x, max_x, min_y, max_y):
+    seed(10)
     for i, city in enumerate(cities):
         cities[i] = (city[0],
                      min_x + random() * (max_x - min_x),
@@ -54,8 +55,8 @@ def main():
         ('Hodonín', 48.51, 17.08),
     ]
     
-    get_random_positions(cities, 48, 51, 12, 19)
-    aco = ACO(cities, 100, len(cities), 0.5, 1.0, 1.0, 2.0)
+    get_random_positions(cities, 0, 10, 0, 10)
+    aco = ACO(cities, 500, len(cities), 0.5, 1.0, 1.0, 2.0)
     aco.run()
     aco.animate_all()
 
