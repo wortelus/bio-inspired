@@ -3,7 +3,7 @@ from copy import deepcopy
 import numpy as np
 from matplotlib import pyplot as plt, animation
 
-from core.func import Function
+from b_core.func import Function
 
 class SomaAtO:
     def __init__(self,
@@ -101,7 +101,7 @@ class SomaAtO:
             self.leader_idx.append(leader_idx)
 
 
-    # Taken from cv6/particle_swarm.py
+    # Taken from b_06/particle_swarm.py
     def animate(self, filename: str, resolution=100):
         # Generate a grid for the heatmap
         x = np.linspace(self.bounds[0], self.bounds[1], resolution)

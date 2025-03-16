@@ -1,6 +1,6 @@
 from matplotlib.animation import FuncAnimation
 
-from core.func import Function, f_names
+from b_core.func import Function, f_names
 import matplotlib.pyplot as plt
 
 import numpy as np

@@ -1,16 +1,15 @@
-from random import random
+from random import random, seed
 
-from core.tsp import Tsp, TspList
-from core.func import Function, f_names
-
+from b_core.tsp import TspList
+from b_08.aco import ACO
 
 def get_random_positions(cities: TspList, min_x, max_x, min_y, max_y):
+    seed(10)
     for i, city in enumerate(cities):
         cities[i] = (city[0],
                      min_x + random() * (max_x - min_x),
                      min_y + random() * (max_y - min_y)
                      )
-
 
 def main():
     cities = [
@@ -55,12 +54,11 @@ def main():
         ('Bohumín', 49.54, 18.21),
         ('Hodonín', 48.51, 17.08),
     ]
-    get_random_positions(cities, 48, 51, 12, 19)
-    tsp = Tsp(cities, 1000, 20, 0.5)
-    paths, costs = tsp.run()
-    tsp.plot_animation(paths, costs)
-    print("done")
-
+    
+    get_random_positions(cities, 0, 10, 0, 10)
+    aco = ACO(cities, 500, len(cities), 0.5, 1.0, 1.0, 2.0)
+    aco.run()
+    aco.animate_all()
 
 if __name__ == '__main__':
     main()

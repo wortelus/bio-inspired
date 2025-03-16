@@ -1,5 +1,5 @@
-from core.solution import Solution
-from core.func import Function, f_names
+from b_core.solution import Solution
+from b_core.func import Function, f_names
 
 def main():
     for name in f_names:

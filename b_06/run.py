@@ -1,7 +1,7 @@
 from os.path import join
 
-from cv6.particle_swarm import Swarm
-from core.func import Function, f_names
+from b_06.particle_swarm import Swarm
+from b_core.func import Function, f_names
 
 def main():
     for name in f_names:

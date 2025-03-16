@@ -1,7 +1,7 @@
 from os.path import join
 
-from cv9.firefly import Fireflies
-from core.func import Function, f_names
+from b_09.firefly import Fireflies
+from b_core.func import Function, f_names
 
 def main():
     for name in f_names:

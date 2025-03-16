@@ -1,5 +1,5 @@
-from cv5.differential_evolution import DifferentialEvolution
-from core.func import Function, f_names
+from b_05.differential_evolution import DifferentialEvolution
+from b_core.func import Function, f_names
 
 def main():
     for name in f_names:

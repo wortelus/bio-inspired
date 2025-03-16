@@ -1,7 +1,7 @@
 from os.path import join
 
-from cv7.soma_ato import SomaAtO
-from core.func import Function, f_names
+from b_07.soma_ato import SomaAtO
+from b_core.func import Function, f_names
 
 def main():
     for name in f_names:

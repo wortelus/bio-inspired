@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt, animation
 
-from core.func import Function
+from b_core.func import Function
 
 
 class Firefly:

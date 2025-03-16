@@ -6,8 +6,8 @@ from datetime import datetime
 from matplotlib import pyplot as plt
 from matplotlib.cm import get_cmap
 
-from core.tsp import TspList
-from cv8.ant import Ant
+from b_core.tsp import TspList
+from b_08.ant import Ant
 
 
 # Kalkulace po dokončení průchodu všemi mravenci
@@ -113,7 +113,7 @@ class ACO:
 
         return self.best_paths, self.best_costs
 
-    # převzato a upraveno z core/tsp.py
+    # převzato a upraveno z b_core/tsp.py
     def animate(self):
         paths = self.best_paths
         costs = self.best_costs
