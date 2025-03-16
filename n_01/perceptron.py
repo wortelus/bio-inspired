@@ -6,7 +6,7 @@ def he_normal(input_num):
 
 
 class Perceptron:
-    def __init__(self, input_num, activator, init_weights: str = "he_normal", classification: bool = True):
+    def __init__(self, input_num, activator, init_weights: str = "he_normal", classification: bool = True, activator_derivative=None):
         self.activator = activator
         if init_weights == "he_normal":
             self.weights = he_normal(input_num)
@@ -17,6 +17,7 @@ class Perceptron:
 
         self.bias = 0
         self.classification = classification
+        self.activator_derivative = activator_derivative
 
     def __str__(self):
         return f"weights:\t{self.weights}\nbias\t:{self.bias}"
