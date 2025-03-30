@@ -47,9 +47,20 @@ def main():
 
     a = Hopfield(pattern_a)
     a_in = pattern_a.flatten()
+    a.plot(pattern_a, title="Clean pattern A")
+    # Bitflip v pixelu na pozici 4
+    a_in[4] = 0 if a_in[4] == 1 else 1
     a_out = a.asynchronous_recovery(a_in)
-    a.plot(a_in.reshape(3, 3), title="Pattern A")
+    a.plot(a_in.reshape(3, 3), title="Broken pattern A")
     a.plot(a.weights, title="Weights A")
+    a.plot(a_out.reshape(3, 3), title="Recovered broken pattern A")
+    # Synchrónní update, zde to funguje
+    steps = 1
+    a_out_sync = a.synchronous_recovery(a_in, steps=steps)
+    a.plot(a_out_sync.reshape(3, 3), title=f"Recovered Pattern A (synchronous, {steps} steps)")
+    steps = 5
+    a_out_sync = a.synchronous_recovery(a_in, steps=steps)
+    a.plot(a_out_sync.reshape(3, 3), title=f"Recovered Pattern A (synchronous, {steps} steps)")
 
     b = Hopfield(pattern_b)
     b_in = pattern_b.flatten()
@@ -60,7 +71,7 @@ def main():
     b.plot(b_in.reshape(5, 5), title="B Broken osmička")
     b.plot(b.weights, title="Weights B")
     b.plot(b_out.reshape(5, 5), title="Recovered Pattern B")
-    # Synchrónní update, zde to náhodou funguje
+    # Synchrónní update, zde to funguje
     steps = 1
     b_out_sync = b.synchronous_recovery(b_in, steps=steps)
     b.plot(b_out_sync.reshape(5, 5), title=f"Recovered Pattern B (synchronous, {steps} steps)")
@@ -74,7 +85,7 @@ def main():
     c.plot(c_in.reshape(5, 5), title="Pattern C")
     c.plot(c.weights, title="Weights C")
     c.plot(c_out.reshape(5, 5), title="Recovered Pattern C")
-    # Synchrónní update, zde to náhodou funguje
+    # Synchrónní update, zde to funguje
     steps = 1
     c_out_sync = c.synchronous_recovery(c_in, steps=steps)
     c.plot(c_out_sync.reshape(5, 5), title=f"Recovered Pattern C (synchronous, {steps} steps)")
