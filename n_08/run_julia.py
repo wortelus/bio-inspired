@@ -5,7 +5,7 @@ def main():
     # c = -0.8 + 0.156j
     # c = 0.285 + 0.01j
     # c = -0.4 + 0.6j
-    # c = -0.70176 - 0.3842j (připomíná mořského koníka)
+    # c = -0.70176 - 0.3842j (nejhezčí pattern)
     # c = -0.7 + 0.27015j
 
     c_value = -0.7 + 0.27015j
