@@ -99,7 +99,7 @@ class Julia:
         # plt.axis("off")
         plt.show()
 
-    def animate_zoom(self, start_zoom: float, end_zoom: float, steps: int, interval: int = 100):
+    def animate_zoom(self, start_zoom: float, end_zoom: float, steps: int, interval: int = 100, filename="julia_animation.gif"):
         fig, ax = plt.subplots(figsize=(8, 8))
 
         # prázný np rgb array s default rozsahem
@@ -123,6 +123,13 @@ class Julia:
             img_display.set_extent([self.x_min, self.x_max, self.y_min, self.y_max])
             ax.set_title(f"Zoom: {zoom:.2f}")
 
-        # animace
-        ani = animation.FuncAnimation(fig, update, frames=steps, interval=interval, repeat=False)
-        ani.save("julia_animation.gif", dpi=100, fps=4)
+            return [img_display]
+
+        # blit=True pro rychlejší překreslování
+        ani = FuncAnimation(fig, update, frames=steps, interval=interval, blit=True,
+                            repeat=False)
+        print(f"Ukládání do {filename}...")
+        # použijem PillowWriter pro GIF
+        ani.save(filename, writer=animation.PillowWriter(fps=10))
+        print("Uloženo")
+        plt.close(fig)

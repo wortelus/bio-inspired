@@ -47,7 +47,7 @@ class Mandelbrot:
         # nastavení z_0 (nultá iterace) na samé 0
         Z = np.zeros_like(C)
         self.iterations_count = np.zeros(C.shape, dtype=int)
-        # escaped = np.zeros(C.shape, dtype=bool)
+        escaped = np.zeros(C.shape, dtype=bool)
 
         # iterace Mendelbrot
         # začneme od 1... iterations_count[x,y] = 0 značí, že bod (x,y) je uvnitř Mandelbrot setu
@@ -84,10 +84,10 @@ class Mandelbrot:
                 r, g, b = (0, 0, 0) \
                     if escape_factor == 0 \
                     else colorsys.hsv_to_rgb(
-                        escape_factor,
-                        1.0,
-                        1.0
-                    )
+                    escape_factor,
+                    1.0,
+                    1.0
+                )
                 rgb_image[i, j] = [r, g, b]
 
         return rgb_image
@@ -102,7 +102,7 @@ class Mandelbrot:
         # plt.axis("off")
         plt.show()
 
-    def animate_zoom(self, start_zoom: float, end_zoom: float, steps: int, interval: int = 100):
+    def animate_zoom(self, start_zoom: float, end_zoom: float, steps: int, interval: int = 100, filename="mandelbrot_animation.gif"):
         fig, ax = plt.subplots(figsize=(8, 8))
 
         # prázný np rgb array s default rozsahem
@@ -126,6 +126,13 @@ class Mandelbrot:
             img_display.set_extent([self.x_min, self.x_max, self.y_min, self.y_max])
             ax.set_title(f"Zoom: {zoom:.2f}")
 
-        # animace
-        ani = animation.FuncAnimation(fig, update, frames=steps, interval=interval, repeat=False)
-        ani.save("mandelbrot_animation.gif", dpi=100, fps=4)
+            return [img_display]
+
+        # blit=True pro rychlejší překreslování
+        ani = FuncAnimation(fig, update, frames=steps, interval=interval, blit=True,
+                            repeat=False)
+        print(f"Ukládání do {filename}...")
+        # použijem PillowWriter pro GIF
+        ani.save(filename, writer=animation.PillowWriter(fps=10))
+        print("Uloženo")
+        plt.close(fig)
