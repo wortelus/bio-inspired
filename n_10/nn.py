@@ -16,7 +16,8 @@ def main():
     # počet rekurentních iterací
     xn_iterations = 200
     # kolik zahodíme x_n hodnot před záznamem
-    n_transients = 100
+    # pro zajímavost dáme neuronce hodnoty i z prvních iterací rekurence
+    n_transients = 0
 
     # konstantní rozsah hodnoty 'a'
     a_values_count = 1000
@@ -31,9 +32,14 @@ def main():
         print("Error: No data generated!")
         return
 
+    # hodnoty 'a' budou tvořit náš vstup neuronce, ona pak bude předpovídat hodnoty 'x' (kterých generujeme n=<0; xn_iterations>
+    # vytvoříme si indexový rozsah, který následně zamícháme
     indices = np.arange(X.shape[0])
+    # aby síť dostala data ze vše rozsahů hodnot 'a' data, pak je musíme zamíchat
     np.random.seed(10)
     np.random.shuffle(indices)
+
+    # rozdělíme data na trénovací, validační a testovací sady
     X_shuffled = X[indices]
     y_shuffled = y[indices]
 
@@ -64,10 +70,10 @@ def main():
         output_layer = Dense(1, activation='sigmoid')(x)
 
         model = Model(inputs=input_layer, outputs=output_layer)
-        model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mean_squared_error'])
+        model.compile(optimizer='adam', loss='mae', metrics=['mse'])
         model.summary()
 
-        model.fit(X_train, y_train, epochs=20, batch_size=32, validation_data=(X_val, y_val),
+        model.fit(X_train, y_train, epochs=5, batch_size=32, validation_data=(X_val, y_val),
                   callbacks=[checkpoint], verbose=1)
         model.load_weights(checkpoint_filepath)
     else:

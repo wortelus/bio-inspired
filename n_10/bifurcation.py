@@ -11,6 +11,7 @@ def generate_bifurcation_data(a_values, n_iterations, n_transients, x0=0.5):
     x_plot_values = []
 
     for a in a_values:
+        # inicializace x, kterou v rámci tohoto cyklu budeme rekurentně aktualizovat
         x = x0
         
         # zahoďme prvních n_transient hodnot

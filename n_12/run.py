@@ -17,8 +17,11 @@ def main():
         # 4/8 sousedů
         neighborhood_type='von_neumann',
         # Tkinter rodič
-        tk_master=root
+        tk_master=root,
+        # seed
+        seed=10,
     )
+
     ff.populate()
     ff.animate(ms=10)
     root.mainloop()

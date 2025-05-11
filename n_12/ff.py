@@ -13,14 +13,21 @@ class ForestFire:
                  p_growth: float = 0.01,
                  p_fire_spontaneous: float = 0.0001,
                  neighborhood_type: str = 'von_neumann',
+                 seed: int = None,
                  tk_master: tk.Tk = None,
                  tk_cell_size: int = 10):
+        # nastavení inicializačního stavu pro random a np.random (seed)
+        if seed is not None:
+            random.seed(seed)
+            np.random.seed(seed)
+
         self.grid_size = grid_size
         self.initial_density = initial_density
         self.grid = np.zeros((grid_size, grid_size), dtype=int)
         self.p_growth = p_growth
         self.p_fire_spontaneous = p_fire_spontaneous
 
+        # tkinter canvas
         self.cell_size = tk_cell_size
         if tk_master:
             self.master = tk_master
@@ -33,7 +40,6 @@ class ForestFire:
 
         if neighborhood_type not in ['von_neumann', 'moore']:
             raise ValueError("nesprávný typ okolí políčka")
-
         self.neighborhood_type = neighborhood_type
 
     def populate(self):
@@ -78,17 +84,21 @@ class ForestFire:
 
     def update_grid(self):
         current_grid = self.grid
+        rows, cols = current_grid.shape
+
+        # kopie gridu pro nový stav
         new_grid = self.grid.copy()
-        rows, cols = new_grid.shape
 
         for r in range(rows):
             for c in range(cols):
                 current_state = current_grid[r, c]
-                neighbors = self.get_neighbors(current_grid, r, c, self.neighborhood_type)
 
+                # stavy sousedů
+                neighbors = self.get_neighbors(current_grid, r, c, self.neighborhood_type)
+                # hoří alespoň jeden soused ?
                 is_neighbor_burning = any(n == FIRE for n in neighbors)
 
-                if current_state == EMPTY or current_state == BURNED:
+                if current_state in [EMPTY, BURNED]:
                     # prázdný nebo spálený má šanci p na vzkvétnutí nového stromu
                     if random.random() < self.p_growth:
                         new_grid[r, c] = TREE
@@ -103,9 +113,10 @@ class ForestFire:
                             new_grid[r, c] = FIRE
 
                 elif current_state == FIRE:
-                    # byli jsme předtím zapálení -> teď shoříme
+                    # byli jsme v předchozím stavu zapáleni -> teď shoříme
                     new_grid[r, c] = BURNED
 
+        # aktualizujeme grid
         self.grid = new_grid
 
     def draw_grid(self):
@@ -121,7 +132,9 @@ class ForestFire:
             for c in range(gs):
                 x1, y1 = c * cs, r * cs
                 x2, y2 = x1 + cs, y1 + cs
-                self.canvas.create_rectangle(x1, y1, x2, y2, fill=rgba_to_hex(cmap(self.grid[r, c])), outline="black")
+                self.canvas.create_rectangle(x1, y1, x2, y2,
+                                             fill=rgba_to_hex(cmap(self.grid[r, c])),
+                                             outline="black")
         # vynutí překreslení
         self.master.update_idletasks()
 
