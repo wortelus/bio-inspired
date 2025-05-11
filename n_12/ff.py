@@ -1,11 +1,9 @@
-import itertools
-
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
 import random
+import numpy as np
+import tkinter as tk
 
 from n_12.const import TREE, EMPTY, FIRE, cmap, BURNED
+from n_12.utils import rgba_to_hex
 
 
 class ForestFire:
@@ -14,12 +12,24 @@ class ForestFire:
                  initial_density: float,
                  p_growth: float = 0.01,
                  p_fire_spontaneous: float = 0.0001,
-                 neighborhood_type: str = 'von_neumann'):
+                 neighborhood_type: str = 'von_neumann',
+                 tk_master: tk.Tk = None,
+                 tk_cell_size: int = 10):
         self.grid_size = grid_size
         self.initial_density = initial_density
         self.grid = np.zeros((grid_size, grid_size), dtype=int)
         self.p_growth = p_growth
         self.p_fire_spontaneous = p_fire_spontaneous
+
+        self.cell_size = tk_cell_size
+        if tk_master:
+            self.master = tk_master
+            total_size = tk_cell_size * grid_size
+            self.canvas = tk.Canvas(tk_master,
+                                    width=total_size,
+                                    height=total_size,
+                                    bg="black")
+            self.canvas.pack()
 
         if neighborhood_type not in ['von_neumann', 'moore']:
             raise ValueError("nesprávný typ okolí políčka")
@@ -66,7 +76,7 @@ class ForestFire:
 
         return neighbors
 
-    def update_grid(self, frame_num):
+    def update_grid(self):
         current_grid = self.grid
         new_grid = self.grid.copy()
         rows, cols = new_grid.shape
@@ -98,34 +108,24 @@ class ForestFire:
 
         self.grid = new_grid
 
-        # update nadpisu
-        plt.title(
-            f'Simulace Forest Fire i={frame_num} '
-            f'(p={self.p_growth}, '
-            f'f={self.p_fire_spontaneous}, '
-            f'density={self.initial_density})'
-        )
+    def draw_grid(self):
+        if not self.canvas:
+            raise ValueError("tkinter canvas není inicializován")
 
-        return [plt.imshow(self.grid, cmap=cmap, interpolation='nearest')]
+        self.canvas.delete("all")
 
-    def animate(self):
-        fig, ax = plt.subplots(figsize=(8, 8))
-        img = ax.imshow(self.grid, cmap=cmap, interpolation='nearest')
-        ax.set_title(
-            f'Simulace Forest Fire '
-            f'(p={self.p_growth}, '
-            f'f={self.p_fire_spontaneous}, '
-            f'density={self.initial_density})'
-        )
+        gs = self.grid_size
+        cs = self.cell_size
 
-        # bez čar
-        ax.grid(False)
-        ax.set_xticks([])
-        ax.set_yticks([])
+        for r in range(gs):
+            for c in range(gs):
+                x1, y1 = c * cs, r * cs
+                x2, y2 = x1 + cs, y1 + cs
+                self.canvas.create_rectangle(x1, y1, x2, y2, fill=rgba_to_hex(cmap(self.grid[r, c])), outline="black")
+        # vynutí překreslení
+        self.master.update_idletasks()
 
-        ani = animation.FuncAnimation(fig, self.update_grid,
-                                      frames=itertools.count(),
-                                      interval=5,
-                                      blit=True,
-                                      repeat=False)
-        plt.show()
+    def animate(self, ms=50):
+        self.update_grid()
+        self.draw_grid()
+        self.master.after(ms, self.animate)
